@@ -18,7 +18,7 @@ class PieceForm:
         self.size = len(matrix)  # The size of the matrix (its dimension, assuming it's square).
         self.color = color  # The color associated with the piece.
 
-    def _rotate(self, clockwise=True):
+    def _rotate(self, clockwise=True) -> None:
         """
         Performs an in-place rotation of the piece's matrix.
 
@@ -41,19 +41,19 @@ class PieceForm:
                     self.matrix[self.size - 1 - i][self.size - j - 1] = self.matrix[self.size - j - 1][i]
                     self.matrix[self.size - j - 1][i] = aux
 
-    def rotate(self):
+    def rotate(self) -> None:
         """
         Rotates the piece 90 degrees clockwise. The rotation is performed in-place.
         """
         self._rotate(clockwise=True)
 
-    def unrotate(self):
+    def unrotate(self) -> None:
         """
         Rotates the piece 90 degrees counterclockwise. The rotation is performed in-place.
         """
         self._rotate(clockwise=False)
 
-    def _get_limits(self):
+    def _get_limits(self) -> tuple:
         """
         Calculates the iteration limits for rotating the matrix.
 
@@ -62,7 +62,7 @@ class PieceForm:
         """
         return self.size // 2, (self.size + 1) // 2
 
-    def __getitem__(self, key):
+    def __getitem__(self, key) -> list:
         """
         Allows access to rows of the matrix using the subscript operator.
 
@@ -83,7 +83,7 @@ class PieceForm:
         """
         return self.color
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         """
         Provides a string representation of the matrix for printing.
 
@@ -103,7 +103,7 @@ PIECE_J = PieceForm(tetris_pieces['J'],6)
 PIECE_S = PieceForm(tetris_pieces['S'],7)
 PIECE_Z = PieceForm(tetris_pieces['Z'],8)
 
-
+pieces = [PIECE_I, PIECE_O, PIECE_T, PIECE_L, PIECE_J, PIECE_S, PIECE_Z]
 
 
 
