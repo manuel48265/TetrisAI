@@ -6,24 +6,40 @@ class Piece:
         self.x = x 
         self.y = y
         self.piece = block
+
+    def rotate(self):
+        self.piece.rotate()
+
+    def unrotate(self):
+        self.piece.unrotate()
+
     def move_right(self):
         self.x += 1
+
     def move_left(self):
         self.x -= 1
+
+    def up(self):
+        self.y += 1
     def down(self):
         self.y -= 1
+
     def set_position(self,x:int,y:int):
         self.x = x 
         self.y = y
-    #Hay que acabarla
+
     def centre_on(self,x:int,y:int):
         self.set_position(x - (self.piece.size-1) // 2,y)
+
     def __getitem__(self, key):
         return self.piece[key]
+    
     def get_color(self):
         return self.piece.get_color()
+    
     def size(self):
         return self.piece.size
+    
     def is_empty_row(self, row:int):
         col = 0
         empty = True
@@ -34,6 +50,29 @@ class Piece:
             col += 1
         
         return empty
+    
+    def adjust_pos(self, sizex: int , sizey: int):
+        posx = self.x
+
+        if(posx < 0):
+            posx = 0
+        if(posx + self.size > sizex):
+            posx = sizex - self.size
+
+        self.set_position(posx,self.y)
+
+    def get_lines(self):
+        output = []
+        lower_bound = 0
+        upper_bound = self.y + 1
+        if(self.y - self.size() + 1 >= 0):
+            lower_bound = self.y - self.size() + 1 
+
+        for i in range(lower_bound,upper_bound):
+            output.append(i)
+
+        return output
+
 
     def draw(self,screen):
         for i in range(self.size()):

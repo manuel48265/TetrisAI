@@ -1,22 +1,60 @@
 from board import Board
 from shapeManager import ShapeManager
+from collections import deque
+from actions import Actions
+from timer import Timer
 class Game: 
-    def __init__(self):
+    def __init__(self, tick_rate: int, set_pieces : list):
 
         self.board = None
         self.current_piece = None
         self.score = 0
         self.game_over = False
-
-    def start(self, width : int, height : int):
+        self.manager = ShapeManager(len(set_pieces),set_pieces)
+        self.next_pieces = deque()
+        self.timer = Timer(timeout_seconds=tick_rate,on_timeout_callback=self.move_piece_down())
+        
+    def start(self, width : int, height : int, num_future_pieces: int):
         self.board = Board(width,height)
+        self.next_pieces = self.manager.init_rand_deque(num_future_pieces)
+        self.board.set_new_piece(self._get_new_piece())
 
     def update():
         pass
+
+    def _get_new_piece(self):
+        self.next_pieces.append(self.manager.get_random_piece())
+        return self.next_pieces.pop()
+    
+    def move_piece_down(self):
+
+        if(self.board.move_piece_down()):
+            pass #reset_timer
+        else: 
+            points += self.board.update_and_return_points()
+            self._get_new_piece()
+
+    def _timer_condition(self,func):
+        if(self.func()):
+            pass #Reset_timer
+
     def game_over():
         pass 
-    def handle_input():
-        pass 
+
+    def handle_input(self, act: Actions) -> None:
+        match act: 
+            case Actions.ROTATE:
+                self._timer_condition(self.board.rotate_piece())
+            case Actions.RIGHT:
+                self._timer_condition(self.board.move_piece_rigth())
+            case Actions.LEFT:
+                self._timer_condition(self.board.move_piece_left())
+            case Actions.DOWN:
+                self.move_piece_down()
+            case _:
+                pass
+
     def print():
+        pass
         
 
