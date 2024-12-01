@@ -1,8 +1,8 @@
-from board import Board
-from shapeManager import ShapeManager
+from src.board import Board
+from src.shapeManager import ShapeManager
 from collections import deque
-from actions import Actions
-from timer import Timer
+from src.actions import Actions
+from src.tetrisTimer import Timer
 class Game: 
     def __init__(self, tick_rate: int, set_pieces : list):
 

@@ -1,4 +1,4 @@
-from constPieces import tetris_pieces
+from src.constPieces import tetris_pieces
 class PieceForm:
     def __init__(self, matrix, color) -> None:
         """
