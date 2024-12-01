@@ -10,6 +10,12 @@ import src.pieceForm as pf
     ],
 )
 def test_set_position(pos_x,pos_y):
+    """AI is creating summary for test_set_position
+
+    Args:
+        pos_x ([type]): [description]
+        pos_y ([type]): [description]
+    """
     piece = Piece(pos_x,pos_y)
 
     assert (piece.x == pos_x and piece.y == pos_y)
@@ -23,6 +29,12 @@ def test_set_position(pos_x,pos_y):
     ],
 )
 def test_is_empty_row(piece,target):
+    """AI is creating summary for test_is_empty_row
+
+    Args:
+        piece ([type]): [description]
+        target ([type]): [description]
+    """
     test_piece = Piece(0,0,piece)
     output =[]
     for i in range(test_piece.size()):
@@ -39,6 +51,14 @@ def test_is_empty_row(piece,target):
     ],
 )
 def test_get_lines(piece,posx,posy,target):
+    """AI is creating summary for test_get_lines
+
+    Args:
+        piece ([type]): [description]
+        posx ([type]): [description]
+        posy ([type]): [description]
+        target ([type]): [description]
+    """
     test_piece = Piece(posx,posy,piece)
     output= test_piece.get_lines()
 
@@ -53,6 +73,14 @@ def test_get_lines(piece,posx,posy,target):
     ],
 )
 def test_adjust_pos(piece,posx,sizex,target):
+    """AI is creating summary for test_adjust_pos
+
+    Args:
+        piece ([type]): [description]
+        posx ([type]): [description]
+        sizex ([type]): [description]
+        target ([type]): [description]
+    """
     test_piece = Piece(posx,0,piece)
 
     test_piece.adjust_pos(sizex)
