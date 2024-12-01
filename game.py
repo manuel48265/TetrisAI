@@ -18,8 +18,10 @@ class Game:
         self.board = Board(width,height)
         self.next_pieces = self.manager.init_rand_deque(num_future_pieces)
         self.board.set_new_piece(self._get_new_piece())
+        self.timer.start()
 
     def update():
+        #print board, pieces and more
         pass
 
     def _get_new_piece(self):
@@ -28,27 +30,30 @@ class Game:
     
     def move_piece_down(self):
 
-        if(self.board.move_piece_down()):
-            pass #reset_timer
-        else: 
-            points += self.board.update_and_return_points()
+        if(not self.board.move_piece_down()):
+            self.points += self.board.update_and_return_points()
             self._get_new_piece()
 
-    def _timer_condition(self,func):
-        if(self.func()):
-            pass #Reset_timer
+        self.timer.reset()
 
-    def game_over():
+    def _timer_condition(self,func):
+        if(func()):
+            self.timer.reset()
+
+    def game_over(self):
+        self.timer.stop()
+        #Finish the game.
+        
         pass 
 
     def handle_input(self, act: Actions) -> None:
         match act: 
             case Actions.ROTATE:
-                self._timer_condition(self.board.rotate_piece())
+                self._timer_condition(self.board.rotate_piece)
             case Actions.RIGHT:
-                self._timer_condition(self.board.move_piece_rigth())
+                self._timer_condition(self.board.move_piece_rigth)
             case Actions.LEFT:
-                self._timer_condition(self.board.move_piece_left())
+                self._timer_condition(self.board.move_piece_left)
             case Actions.DOWN:
                 self.move_piece_down()
             case _:
