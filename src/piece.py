@@ -1,8 +1,8 @@
-import pieceForm as pf
 import pygame
-from constColors import tetris_colors
+import src.pieceForm as pf
+from src.constColors import tetris_colors
 class Piece:
-    def __init__(self,x: int, y:int, block: pf.PieceForm):
+    def __init__(self,x: int, y:int, block: pf.PieceForm = None):
         self.x = x 
         self.y = y
         self.piece = block
@@ -21,6 +21,7 @@ class Piece:
 
     def up(self):
         self.y += 1
+
     def down(self):
         self.y -= 1
 
@@ -44,20 +45,24 @@ class Piece:
         col = 0
         empty = True
 
-        while(col < len(self.piece[row]) and empty):
-            if(self.piece[row][col] != 0):
-                empty = False
-            col += 1
+        if(row < self.size()):
+            while(col < len(self.piece[row]) and empty):
+                if(self.piece[row][col] != 0):
+                    empty = False
+                col += 1
+        else:
+            raise RuntimeError("row out of limits")
+            
         
         return empty
     
-    def adjust_pos(self, sizex: int , sizey: int):
+    def adjust_pos(self, sizex: int):
         posx = self.x
 
         if(posx < 0):
             posx = 0
-        if(posx + self.size > sizex):
-            posx = sizex - self.size
+        if(posx + self.size() > sizex):
+            posx = sizex - self.size()
 
         self.set_position(posx,self.y)
 
@@ -84,4 +89,5 @@ class Piece:
                         ((self.x + j) * self.CELL_SIZE, (self.y + i) * self.CELL_SIZE, self.CELL_SIZE, self.CELL_SIZE)
                     )
 
-        
+
+

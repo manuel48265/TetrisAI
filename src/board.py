@@ -1,4 +1,4 @@
-from piece import Piece
+from src.piece import Piece
 class Board:
     def __init__(self, width : int, height: int):
         self.width = width

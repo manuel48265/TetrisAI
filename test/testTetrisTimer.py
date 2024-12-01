@@ -1,6 +1,6 @@
 import pytest
 import time
-from tetrisTimer import TetrisTimer
+from src.tetrisTimer import TetrisTimer
 
 class TClass:
     def __init__(self):
