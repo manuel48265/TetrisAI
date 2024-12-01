@@ -6,7 +6,7 @@ class TetrisTimer:
     Timer to automatically trigger a piece drop after a certain time
     if no action is performed.
     """
-    def __init__(self, timeout_seconds, on_timeout_callback):
+    def __init__(self, time, function):
         """
         Initializes the TetrisTimer.
 
@@ -14,42 +14,53 @@ class TetrisTimer:
             timeout_seconds (int): The number of seconds before triggering the timeout action.
             on_timeout_callback (callable): A function to call when the timer times out.
         """
-        self.timeout_seconds = timeout_seconds
-        self.on_timeout_callback = on_timeout_callback
-        self.timer_thread = None
-        self.reset_event = threading.Event()
-        self.running = False
+        self.time = time
+        self.function = function
+        self.thread = None
+        self.event = threading.Event()
 
     def start(self):
         """
         Starts the timer thread.
         """
+        #Boolean control variable
         self.running = True
-        self.timer_thread = threading.Thread(target=self._run_timer)
-        self.timer_thread.daemon = True
-        self.timer_thread.start()
+        #Init the thread 
+        self.thread = threading.Thread(target=self._run)
+        #Thread daemon for secondary tasks
+        self.thread.daemon = True
+        #Init the secondary thread
+        self.thread.start()
 
     def stop(self):
         """
         Stops the timer thread.
         """
         self.running = False
-        self.reset_event.set()  # Ensure the thread exits if waiting
-        if self.timer_thread:
-            self.timer_thread.join()
+        self.reset()
+        if self.thread.is_alive():
+            self.thread.join()
 
-    def reset(self):
+    def reset(self, interval=None):
         """
-        Resets the timer to start counting again.
+        Reinicia el temporizador con un nuevo intervalo (opcional).
+        :param interval: Nuevo intervalo en segundos (opcional).
         """
-        self.reset_event.set()  # Notify the thread to reset the timer
+        self.event.set()  # Interrumpe el temporizador actual
+        
 
-    def _run_timer(self):
+    def _run(self):
         """
         Internal method to run the timer in a separate thread.
         """
         while self.running:
-            self.reset_event.clear()
-            is_reset = self.reset_event.wait(self.timeout_seconds)
-            if not is_reset:  # Timer expired without a reset
-                self.on_timeout_callback()  # Trigger the timeout action
+            self.event.wait(timeout=self.time)
+            if not self.event.is_set():
+                self.function()
+            self.event.clear()
+
+
+
+
+
+
