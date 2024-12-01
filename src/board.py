@@ -1,4 +1,5 @@
 from src.piece import Piece
+
 class Board:
     def __init__(self, width : int, height: int):
         self.width = width
@@ -6,51 +7,40 @@ class Board:
         self.grid = [[0 for i in range(width)] for i in range(height)]
         self.current_piece = None
         self.points ={0:0,1:100,2:300,3:500,4:800}
-
+            
     #If the piece can move to the rigth, left, or can rotate.
+
     def is_valid_position(self):
-        return (not self.out_of_limits() and not self.piece_colide())
-
-    #begin Subfunctions
-    def out_of_limits(self):
 
         for i in range(self.current_piece.size()):
             for j in range(self.current_piece.size()):
                 if(self.current_piece[i][j] == 1):
-                    if(self.current_piece.posx + j > self.width):
-                        return True
-                    elif(self.current_piece.posy -i < 0):
-                        return True
-                    
-        return False
-
-    def piece_colide(self):
-
-        for i in range(self.current_piece.size()):
-            for j in range(self.current_piece.size()):
-                if(self.current_piece[i][j] == 1):
-                    posx = self.current_piece.posx + j
-                    posy = self.current_piece.posy - i
-                    if(self.current_piece[posx][posy] == 1 ):
-                        if(self.grid[posx][posy] != 0):
-                            return True
-
-        return False
-    #end Subfunctions
+                    posx = self.current_piece.x + j
+                    posy = self.current_piece.y + i
+                    bad_x = posx >= self.width or posx < 0
+                    bad_y = posy < 0 or posy > self.height
+                    if(bad_x or bad_y):
+                        return False
+                    elif(self.grid[posy][posx] != 0):
+                        return False
+        return True
 
     def _cols_down(self, lines: list):
-        current_line = 0
-        next_line = 0
-        while (next_line < self.height):
+        current_line = next_line = self.height - 1
+
+        while (next_line >= 0):
 
             while (next_line in lines):
-                next_line+=1
+                next_line-=1
 
-            self.grid[current_line] = next_line
-            current_line+=1
+            if(next_line >= 0):
+                self.grid[current_line] = next_line
+
+            current_line-=1
+            next_line -= 1
 
         for i in range(len(lines)):
-            self.grid[current_line+i] = self.width *[0]
+            self.grid[i] = self.width *[0]
 
 
     def set_new_piece(self, piece : Piece):
@@ -64,7 +54,7 @@ class Board:
             i = 0
             while(not game_over and not valid_pos):
                 if(self.current_piece.is_empty_row(i)):
-                    self.current_piece.centre_on(self,self.height + i)
+                    self.current_piece.centre_on(self,self.height - i)
                     if(not self.is_valid_position()):
                         i+= 1
                     else:
@@ -141,9 +131,8 @@ class Board:
         total = []
 
         for line in lines:
-
+            sum = 0
             for i in range(self.width):
-                sum = 0
                 if(self.grid[line][i] != 0):
                     sum += 1
 
