@@ -18,7 +18,7 @@ class Board:
                     posx = self.current_piece.x + j
                     posy = self.current_piece.y + i
                     bad_x = posx >= self.width or posx < 0
-                    bad_y = posy < 0 or posy > self.height
+                    bad_y = posy < 0 or posy >= self.height
                     if(bad_x or bad_y):
                         return False
                     elif(self.grid[posy][posx] != 0):
@@ -45,22 +45,27 @@ class Board:
 
     def set_new_piece(self, piece : Piece):
         valid_pos = False
-        self.current_piece = Piece
+        self.current_piece = piece
         #Establecer posicion inicial en el centro del grid 
-        self.current_piece.centre_on(self.width // 2,self.height - 1)
+        new_x = (self.width-1)//2 
+        new_y = 0
+
+        self.current_piece.centre_on(new_x,new_y)
 
         if(not self.is_valid_position()):
             game_over = False
             i = 0
             while(not game_over and not valid_pos):
                 if(self.current_piece.is_empty_row(i)):
-                    self.current_piece.centre_on(self,self.height - i)
+                    self.current_piece.centre_on(new_x,-i-1)
                     if(not self.is_valid_position()):
                         i+= 1
                     else:
                         valid_pos = True
                 else: 
                     game_over = True
+        else:
+            valid_pos = True
 
         return valid_pos
     
@@ -69,7 +74,7 @@ class Board:
         output = True
         pos_x,pos_y = self.current_piece.x,self.current_piece.y
 
-        self.current_piece.adjust_pos(self.width,self.height)
+        self.current_piece.adjust_pos(self.width)
         self.current_piece.rotate()
 
         if(not self.is_valid_position()):
