@@ -11,7 +11,6 @@ class Board:
     #If the piece can move to the rigth, left, or can rotate.
 
     def is_valid_position(self):
-
         for i in range(self.current_piece.size()):
             for j in range(self.current_piece.size()):
                 if(self.current_piece[i][j] == 1):
@@ -88,7 +87,7 @@ class Board:
         output = True
         self.current_piece.down()
 
-        if(self.piece_colide()):
+        if(not self.is_valid_position()):
             self.current_piece.up()
             self.lock_piece()
             output = False
