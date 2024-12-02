@@ -5,6 +5,14 @@ from src.piece import Piece
 import src.pieceForm as pf
 
 
+grid_0 = [
+    [0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0]
+]
 grid_1 = [
     [0, 0, 0, 0],
     [0, 0, 0, 0],
@@ -125,6 +133,7 @@ def test_piece_colide(piece,grid,target):
     test_board.current_piece = piece
 
     assert test_board.is_valid_position() == target
+
 @pytest.mark.parametrize(
     "grid,lines,target_grid",
     [
@@ -139,14 +148,69 @@ def test_cols_down(grid,lines,target_grid):
 
     test_board._cols_down(lines) == target_grid
 
-def test_set_new_piece():
-    pass
+@pytest.mark.parametrize(
+    "piece,grid,target",
+    [
+        (Piece(0, 0, pf.PIECE_I), grid_3, True),
+        (Piece(0, 0, pf.PIECE_Z), grid_3, False),
+        (Piece(0, 0, pf.PIECE_L), grid_3, False),
+        (Piece(0, 0, pf.PIECE_J), grid_3, False),
+        (Piece(0, 0, pf.PIECE_L), grid_1, True),
+        (Piece(0, 0, pf.PIECE_J), grid_1, True),
+        (Piece(0, 0, pf.PIECE_I), grid_1, True)
+    ],
+)
+def test_set_new_piece(piece,grid,target):
+    test_board = Board(len(grid[0]),len(grid))
+    test_board.grid = copy.deepcopy(grid)
 
-def test_rotate_piece():
-    pass
+    assert test_board.set_new_piece(copy.deepcopy(piece)) == target
 
-def test_move_piece_down():
-    pass
+
+@pytest.mark.parametrize(
+    "piece,grid,rotate_state,target",
+    [
+        (Piece(-1, 0, pf.PIECE_I), grid_0, 3, True),
+        (Piece(-1, 0, pf.PIECE_Z), grid_0, 1, True),
+        (Piece(0, 0, pf.PIECE_Z), grid_4, 0, False),
+        (Piece(0, 0, pf.PIECE_S), grid_1, 0, False),
+        (Piece(4, 0, pf.PIECE_I), grid_0, 3, True)
+    ],
+)
+def test_rotate_piece(piece,grid,rotate_state,target):
+    test_board = Board(len(grid[0]),len(grid))
+    test_board.grid = copy.deepcopy(grid)
+    
+    for i in range(rotate_state):
+        piece.rotate()
+
+    test_board.current_piece = piece
+
+    assert test_board.rotate_piece() == target
+
+#
+@pytest.mark.parametrize(
+    "piece,grid,rotate_state,target",
+    [
+        (Piece(0, 0, pf.PIECE_I), grid_3, True),
+        (Piece(0, 0, pf.PIECE_Z), grid_3, False),
+        (Piece(0, 0, pf.PIECE_L), grid_3, False),
+        (Piece(0, 0, pf.PIECE_J), grid_3, False),
+        (Piece(0, 0, pf.PIECE_L), grid_1, True),
+        (Piece(0, 0, pf.PIECE_J), grid_1, True),
+        (Piece(0, 0, pf.PIECE_I), grid_1, True)
+    ],
+)
+def test_move_piece_down(piece,grid,rotate_state,target):
+    test_board = Board(len(grid[0]),len(grid))
+    test_board.grid = copy.deepcopy(grid)
+    
+    for i in range(rotate_state):
+        piece.rotate()
+
+    test_board.current_piece = piece
+
+    assert test_board.rotate_piece() == target
 
 @pytest.mark.parametrize(
     "piece,grid,target",

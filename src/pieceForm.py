@@ -1,4 +1,5 @@
 from src.constPieces import tetris_pieces
+import copy
 class PieceForm:
     def __init__(self, matrix, color) -> None:
         """
@@ -14,7 +15,7 @@ class PieceForm:
         if not matrix or not all(len(row) == len(matrix) for row in matrix):
             raise ValueError("The matrix must be square and cannot be empty")
         
-        self.matrix = matrix  # The matrix representing the shape of the piece.
+        self.matrix = copy.deepcopy(matrix)  # The matrix representing the shape of the piece.
         self.size = len(matrix)  # The size of the matrix (its dimension, assuming it's square).
         self.color = color  # The color associated with the piece.
 

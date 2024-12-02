@@ -1,11 +1,12 @@
 import pygame
+import copy
 import src.pieceForm as pf
 from src.constColors import tetris_colors
 class Piece:
     def __init__(self,x: int, y:int, block: pf.PieceForm = None):
         self.x = x 
         self.y = y
-        self.piece = block
+        self.piece = copy.deepcopy(block)
 
     def rotate(self):
         self.piece.rotate()
@@ -29,8 +30,8 @@ class Piece:
         self.x = x 
         self.y = y
 
-    def centre_on(self,x:int,y:int):
-        self.set_position(x - (self.piece.size-1) // 2,y)
+    def centre_on(self, x : int, y : int):
+        self.set_position(x - (self.size() -1) // 2, y)
 
     def __getitem__(self, key):
         return self.piece[key]
