@@ -21,10 +21,10 @@ class Piece:
         self.x -= 1
 
     def up(self):
-        self.y += 1
+        self.y -= 1
 
     def down(self):
-        self.y -= 1
+        self.y += 1
 
     def set_position(self,x:int,y:int):
         self.x = x 
