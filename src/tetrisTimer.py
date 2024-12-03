@@ -41,7 +41,7 @@ class TetrisTimer:
         if self.thread.is_alive():
             self.thread.join()
 
-    def reset(self, interval=None):
+    def reset(self):
         """
         Reinicia el temporizador con un nuevo intervalo (opcional).
         :param interval: Nuevo intervalo en segundos (opcional).
@@ -58,6 +58,13 @@ class TetrisTimer:
             if not self.event.is_set():
                 self.function()
             self.event.clear()
+
+    def reduce_time(self,interval):
+        """
+            Documentation should be here. If I had documentation.
+        """
+
+        self.time = interval
 
 
 
