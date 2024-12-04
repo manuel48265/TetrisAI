@@ -78,8 +78,7 @@ class Piece:
             output.append(i)
 
         return output
-
-
+    
     def draw(self,screen):
         for i in range(self.size()):
             for j in range (self.size()):
