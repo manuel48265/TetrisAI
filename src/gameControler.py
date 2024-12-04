@@ -4,8 +4,8 @@ from collections import deque
 from src.actions import Actions
 from src.tetrisTimer import TetrisTimer
 from src.player import Player
-class Game: 
-    def __init__(self, tick_rate: int, set_pieces : list, player : Player):
+class GameControler: 
+    def __init__(self, tick_rate: int, set_pieces : list, player : Player, view=None):
 
         self.board = None
         self.current_piece = None
