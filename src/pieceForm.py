@@ -1,7 +1,7 @@
 from src.constPieces import tetris_pieces
 import copy
 class PieceForm:
-    def __init__(self, matrix, color) -> None:
+    def __init__(self, matrix, color:int) -> None:
         """
         Initializes the piece with a matrix representing its shape and a color.
 
