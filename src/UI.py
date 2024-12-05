@@ -1,6 +1,9 @@
 import pygame
 import random
 from src.gameControler import GameControler
+from src.piece import Piece
+from src.board import Board
+import src.pieceForm as pf
 
 # Colores
 ROWS = 20
@@ -18,8 +21,6 @@ class UI:
         self.screen = None
         self.width = size_x
         self.height = size_y
-        self.level = 0
-        self.score = 0
         self.background = None
 
     def start(self):
@@ -41,7 +42,7 @@ class UI:
     def update_view(game: GameControler):
         pass
 
-    def rigth_panel(self):
+    def rigth_panel(self, pieces):
         TITLE = pygame.font.Font(None, 40)
         COLS_NEXT = 4
         ROWS_NEXT = 12
@@ -53,6 +54,21 @@ class UI:
 
         self.screen.blit(next_text, (INIT_X + 2.2*DELTA, INIT_Y))  # Posicionar texto NEXT
 
+        i = 0
+        for piece in pieces:
+            pos = (INIT_X + (2 - piece.size()/2)*CELL_SIZE, INIT_Y + (4*i + 2)*CELL_SIZE)
+            piece.draw(self.screen,pos)
+            i+= 1
+
+    def update(self, game : GameControler):
+
+        self.screen.blit(self.background,(0,0))
+
+        self.left_panel(game.get_score(), game.get_level())
+        self.rigth_panel(game.get_next_pieces())
+        self.central_panel(game.get_board())
+
+        pygame.display.update()
 
 
     def left_panel(self,score,level):
@@ -80,25 +96,22 @@ class UI:
 
     def load_image(self):
         # Cargar la imagen de fondo
-        self.background = pygame.image.load("./images/BackGround2.jpeg")  
+        self.background = pygame.image.load("./images/BackGround3.jpeg")  
 
         # Escalar la imagen al tamaño de la ventana (opcional)
         self.background= pygame.transform.scale(self.background, (self.width, self.height))
 
-    def central_panel(self):
+    def central_panel(self,board : Board):
         
         INIT_X = 400
         INIT_Y = 50
 
         self.draw_panel((CELL_SIZE*COLS + 2*DELTA,CELL_SIZE*ROWS + 2*DELTA),(INIT_X - DELTA, INIT_Y - DELTA), BLACK)
+        
+        board.draw(self.screen,(INIT_X,INIT_Y))
+        board.get_current_piece().draw(self.screen,(INIT_X,INIT_Y))
 
-        for row in range(ROWS):
-            for col in range(COLS):
-                # Coordenadas de cada celda
-                x = col * CELL_SIZE + INIT_X 
-                y = row * CELL_SIZE + INIT_Y
-                # Dibujar el contorno de cada celda
-                pygame.draw.rect(self.screen, GRAY, (x, y, CELL_SIZE, CELL_SIZE), 1)
+        
     
     def run(self):
         while True:
@@ -114,21 +127,8 @@ class UI:
                     pass
 
 
-            self.screen.blit(self.background,(0,0))
-
-            #self.draw_panel((40,40),(0,0))
-            self.left_panel(self.score, self.level)
-            self.rigth_panel()
-            self.central_panel()
 
 
-            pygame.display.update()
-            
-    
-
-screen = UI(1280,910)
-screen.start()
-screen.run()
 
     
 

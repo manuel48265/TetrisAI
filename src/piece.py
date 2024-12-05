@@ -2,6 +2,7 @@ import pygame
 import copy
 import src.pieceForm as pf
 from src.constColors import tetris_colors
+from src.constGame import CELL_SIZE
 class Piece:
     def __init__(self,x: int, y:int, block: pf.PieceForm = None):
         self.x = x 
@@ -79,14 +80,23 @@ class Piece:
 
         return output
     
-    def draw(self,screen):
+    def draw(self,screen, pos):
         for i in range(self.size()):
             for j in range (self.size()):
                 if(self[i][j] == 1):
+                    x = (self.x + j) * CELL_SIZE + pos[0]
+                    y = (self.y + i) * CELL_SIZE + pos[1]
                     pygame.draw.rect(
                         screen,
-                        tetris_colors(self.get_color()),
-                        ((self.x + j) * self.CELL_SIZE, (self.y + i) * self.CELL_SIZE, self.CELL_SIZE, self.CELL_SIZE)
+                        tetris_colors[self.get_color()],
+                        (x, y, CELL_SIZE, CELL_SIZE),
+                        0
+                    )
+                    pygame.draw.rect(
+                        screen,
+                        (0,0,0),
+                        (x, y, CELL_SIZE, CELL_SIZE),
+                        1
                     )
 
 

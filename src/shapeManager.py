@@ -1,6 +1,8 @@
 import random
 import pieceForm
 from collections import deque
+from src.pieceForm import pieces
+from src.piece import Piece
 
 class ShapeManager:
     """
@@ -29,14 +31,14 @@ class ShapeManager:
         self.num_pieces = num_pieces
         self.pieces = pieces
 
-    def get_random_piece(self) -> pieceForm:
+    def get_random_piece(self) -> Piece:
         """
         Returns a randomly selected Tetris piece from the list.
 
         Returns:
             pieceForm: A randomly chosen Tetris piece.
         """
-        return random.choice(self.pieces)
+        return Piece(0,0,random.choice(self.pieces))
 
     def init_rand_deque(self, num_elements: int) -> deque:
         """
@@ -52,3 +54,4 @@ class ShapeManager:
         for i in range(num_elements):
             output.append(self.get_random_piece())
         return output
+    

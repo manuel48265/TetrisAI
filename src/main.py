@@ -1,3 +1,5 @@
+import pygame
+
 class Main:
     def __init__():
         
@@ -6,6 +8,11 @@ class Main:
     def trainAI():
         pass
 
-    def ():
+    def PlayWithUI():
+
+    def PlayByHuman():
+
+
+    def 
         
 

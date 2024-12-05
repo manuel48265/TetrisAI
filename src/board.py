@@ -1,4 +1,7 @@
+import pygame
 from src.piece import Piece
+from src.constGame import CELL_SIZE
+from src.constColors import  tetris_colors
 
 class Board:
     def __init__(self, width : int, height: int):
@@ -33,9 +36,9 @@ class Board:
                 next_line-=1
 
             if(next_line >= 0):
-                self.grid[current_line] = next_line
+                self.grid[current_line] = self.grid[next_line]
 
-            current_line-=1
+            current_line-= 1
             next_line -= 1
 
         for i in range(len(lines)):
@@ -116,18 +119,17 @@ class Board:
         return output
 
     def lock_piece(self):
-        
         for i in range(self.current_piece.size()):
             for j in range(self.current_piece.size()):
                 if(self.current_piece[i][j] == 1):
-                    self.grid[self.current_piece.x + j][self.current_piece.y -i] == self.current_piece.get_color()
+                    self.grid[self.current_piece.y +i][self.current_piece.x + j] = self.current_piece.get_color()
 
         
     def update_and_return_points(self):
-        self.lock_piece()
         lines = self.current_piece.get_lines()
         lines = self.identify_lines(lines)
-        self._cols_down(lines)
+        if len(lines) != 0:
+            self._cols_down(lines)
         return self._get_points_for_clear_lines(len(lines))
 
 
@@ -148,5 +150,20 @@ class Board:
     def _get_points_for_clear_lines(self,num_lines):
         return self.points[num_lines]
     
-    def draw():
-        pass
+    def get_current_piece(self) -> Piece:
+        return self.current_piece
+
+    def draw(self, screen, pos):
+        for row in range(self.height):
+            for col in range(self.width):
+                # Coordenadas de cada celda
+                x = col * CELL_SIZE + pos[0]
+                y = row * CELL_SIZE + pos[1]
+                # Dibujar el contorno de cada celda
+                draw_border = 0
+                if(self.grid[row][col] == 0):
+                    draw_border = 1
+
+                pygame.draw.rect(screen, tetris_colors[self.grid[row][col]], (x, y, CELL_SIZE, CELL_SIZE), width=draw_border )
+
+        

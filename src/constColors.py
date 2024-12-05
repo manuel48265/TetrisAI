@@ -1,10 +1,10 @@
 tetris_colors = {
-    0: "#000000",  # Fondo - Negro
-    2: "#00FFFF",  # I (línea) - Cian
-    3: "#FFFF00",  # O (cuadrado) - Amarillo
-    4: "#800080",  # T - Morado
-    5: "#FFA500",  # L - Naranja
-    6: "#0000FF",  # J - Azul
-    7: "#00FF00",  # S - Verde
-    8: "#FF0000",  # Z - Rojo
+    0: (255, 255, 255),   # Fondo - Blanco
+    2: (0, 255, 255),     # I (línea) - Cian
+    3: (255, 255, 0),     # O (cuadrado) - Amarillo
+    4: (128, 0, 128),     # T - Morado
+    5: (255, 165, 0),     # L - Naranja
+    6: (0, 0, 255),       # J - Azul
+    7: (0, 255, 0),       # S - Verde
+    8: (255, 0, 0),       # Z - Rojo
 }

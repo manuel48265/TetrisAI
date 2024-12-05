@@ -6,7 +6,7 @@ class TetrisTimer:
     Timer to automatically trigger a piece drop after a certain time
     if no action is performed.
     """
-    def __init__(self, time, function):
+    def __init__(self, time, function=None):
         """
         Initializes the TetrisTimer.
 
@@ -19,14 +19,17 @@ class TetrisTimer:
         self.thread = None
         self.event = threading.Event()
 
+    def set_funct(self,function):
+        self.function = function
+
     def start(self):
         """
         Starts the timer thread.
         """
-        #Boolean control variable
-        self.running = True
         #Init the thread 
         self.thread = threading.Thread(target=self._run)
+        #Boolean control variable
+        self.running = True
         #Thread daemon for secondary tasks
         self.thread.daemon = True
         #Init the secondary thread
