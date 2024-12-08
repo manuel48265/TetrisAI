@@ -128,6 +128,13 @@ def test_out_of_limits(piece,width,heigth,target):
     ],
 )
 def test_piece_colide(piece,grid,target):
+    """Tests if the piece collides with existing blocks or boundaries.
+    
+    Args:
+        piece (Piece): The piece to be tested.
+        grid (list of list of int): The current state of the board.
+        target (bool): The expected result (True if no collision, False otherwise).
+    """
     test_board = Board(len(grid[0]),len(grid))
     test_board.grid = copy.deepcopy(grid)
 
@@ -144,6 +151,13 @@ def test_piece_colide(piece,grid,target):
     ],
 )
 def test_cols_down(grid,lines,target_grid):
+    """ Test the _cols_down method of the Board class.
+    
+    Args:
+        grid (list of list of int): The current state of the board.
+        lines (list of int): The lines to be removed.
+        target_grid (list of list of int): The expected result after removing the lines.
+    """
     test_board = Board(len(grid[0]),len(grid))
     test_board.grid = copy.deepcopy(grid)
     test_board._cols_down(lines)
@@ -163,6 +177,13 @@ def test_cols_down(grid,lines,target_grid):
     ],
 )
 def test_set_new_piece(piece,grid,target):
+    """ Test the set_new_piece method of the Board class.
+    
+    Args:
+        piece (Piece): The piece to be set.
+        grid (list of list of int): The current state of the board.
+        target (bool): The expected result after setting the piece.
+    """
     test_board = Board(len(grid[0]),len(grid))
     test_board.grid = copy.deepcopy(grid)
 
@@ -180,6 +201,14 @@ def test_set_new_piece(piece,grid,target):
     ],
 )
 def test_rotate_piece(piece,grid,rotate_state,target):
+    """ Test the rotate_piece method of the Board class.
+    
+    Args:
+        piece (Piece): The piece to be rotated.
+        grid (list of list of int): The current state of the board.
+        rotate_state (int): The number of times the piece should be rotated.
+        target (bool): The expected result after rotating the piece.
+    """
     test_board = Board(len(grid[0]),len(grid))
     test_board.grid = copy.deepcopy(grid)
     
@@ -204,6 +233,16 @@ def test_rotate_piece(piece,grid,rotate_state,target):
     ],
 )
 def test_move_piece_down(piece,grid,rotate_state,target):
+    """
+    Test the move_piece_down method of the Board class.
+
+    Args:
+        piece (Piece): The piece to be moved.
+        grid (list of list of int): The current state of the board.
+        rotate_state (int): The number of times the piece should be rotated.
+        target (bool): The expected result after moving the piece down.
+    
+    """
     test_board = Board(len(grid[0]),len(grid))
     test_board.grid = copy.deepcopy(grid)
 
@@ -225,6 +264,14 @@ def test_move_piece_down(piece,grid,rotate_state,target):
     ]
 )
 def test_move_piece_right(piece,grid,target):
+    """
+    Test the move_piece_right method of the Board class.
+
+    Args:
+        piece (Piece): The piece to be moved.
+        grid (list of list of int): The current state of the board.
+        target (bool): The expected result after moving the piece right.
+    """
     test_board = Board(len(grid[0]),len(grid))
     test_board.grid = copy.deepcopy(grid)
 
@@ -246,6 +293,13 @@ def test_move_piece_right(piece,grid,target):
     ]
 )
 def test_move_piece_left(piece,grid,target):
+    """ Test the move_piece_left method of the Board class.
+    
+    Args:
+        piece (Piece): The piece to be moved.
+        grid (list of list of int): The current state of the board.
+        target (bool): The expected result after moving the piece left.
+    """
     test_board = Board(len(grid[0]),len(grid))
     test_board.grid = copy.deepcopy(grid)
 
@@ -268,12 +322,15 @@ def test_lock_piece():
     ]
 )
 def test_identify_lines(grid,lines,target):
-    """AI is creating summary for test_identify_lines
+    """
+        Test the identify_lines method of the Board class.
 
-    Args:
-        grid ([type]): [description]
-        lines ([type]): [description]
-        target ([type]): [description]
+            grid (list of list of int): The grid representing the current state of the board.
+            lines (list of int): The lines to be identified.
+            target (list of int): The expected result after identifying the lines.
+
+        Asserts:
+            The result of identify_lines method matches the target.
     """
     test_board = Board(len(grid[0]),len(grid))
     test_board.grid = copy.deepcopy(grid)
@@ -337,11 +394,11 @@ def test_identify_lines(grid,lines,target):
 )
 def test_get_metrics(grid, target_metrics):
     """
-    Testea la función get_metrics de la clase Board utilizando grids predefinidos.
-    
+    Test the get_metrics method of the Board class. 
+
     Args:
-        grid (list of list of int): El estado del grid a testear.
-        target_metrics (dict): Las métricas esperadas para el grid proporcionado.
+        grid (list of list of int): The grid representing the current state of the board.
+        target_metrics (dict): The expected metrics of the board.
     """
     width = len(grid[0])
     height = len(grid)
