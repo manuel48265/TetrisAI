@@ -1,9 +1,9 @@
 import pygame
 import random
-from src.gameControler import GameControler
+from src.game import Game
 from src.piece import Piece
 from src.board import Board
-import src.pieceForm as pf
+import src.utils.pieceForm as pf
 
 # Colores
 ROWS = 20
@@ -30,17 +30,10 @@ class UI:
         self.screen = pygame.display.set_mode((self.width,self.height))
         self.load_image()
 
-    def draw_board(self):
-        pass
-    def draw_piece(self):
-        pass
     def draw_panel(self,size,pos,color):
         new_panel = pygame.Surface((size))
         new_panel.fill(color)
         self.screen.blit(new_panel,pos)
-
-    def update_view(game: GameControler):
-        pass
 
     def rigth_panel(self, pieces):
         TITLE = pygame.font.Font(None, 40)
@@ -60,7 +53,7 @@ class UI:
             piece.draw(self.screen,pos)
             i+= 1
 
-    def update(self, game : GameControler):
+    def update(self, game : Game):
 
         self.screen.blit(self.background,(0,0))
 
@@ -110,21 +103,7 @@ class UI:
         
         board.draw(self.screen,(INIT_X,INIT_Y))
         board.get_current_piece().draw(self.screen,(INIT_X,INIT_Y))
-
-        
-    
-    def run(self):
-        while True:
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    pygame.quit()
-                    exit()
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_a:
-                        self.score += random.randint(0,10)
-                        self.level += random.randint(0,10)
-                if event.type == pygame.KEYUP:
-                    pass
+            
 
 
 

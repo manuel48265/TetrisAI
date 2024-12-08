@@ -1,22 +1,21 @@
 import pygame
-from src.gameControler import GameControler
+import time
+from src.game import Game
 from src.UI import UI
-from src.pieceForm import pieces
-from src.player import Player
+from src.utils.pieceForm import pieces
+from src.controler import Controler
 
-player = Player(False,idle=True)
-juego = GameControler(0.3,pieces,player)
+controler = Controler(True)
+juego = Game(0.5,pieces)
 screen = UI(1280,910)
 screen.start()
 juego.start(10,20,3)
 
 while juego.get_game_state():
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            exit()
     screen.update(juego)
+    juego.update(controler.get_action())
 
-print(juego.get_score())
+while True:
+    controler.get_action()
 
 

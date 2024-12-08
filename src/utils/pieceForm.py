@@ -1,6 +1,62 @@
-from src.constPieces import tetris_pieces
 import copy
+
+tetris_pieces = {
+    'I': [
+        [0, 0, 0, 0],
+        [1, 1, 1, 1],
+        [0, 0, 0, 0],
+        [0, 0, 0, 0]
+    ],
+    'O': [
+        [1, 1],
+        [1, 1]
+    ],
+    'T': [
+        [0, 1, 0],
+        [1, 1, 1],
+        [0, 0, 0]
+    ],
+    'L': [
+        [1, 0, 0],
+        [1, 1, 1],
+        [0, 0, 0]
+    ],
+    'J': [
+        [0, 0, 1],
+        [1, 1, 1],
+        [0, 0, 0]
+    ],
+    'S': [
+        [0, 1, 1],
+        [1, 1, 0],
+        [0, 0, 0]
+    ],
+    'Z': [
+        [1, 1, 0],
+        [0, 1, 1],
+        [0, 0, 0]
+    ]
+}
+
 class PieceForm:
+    """
+    Represents a Tetris-like piece with a shape defined by a matrix and a color.
+
+    Attributes:
+        matrix (list of list of int): A 2D square matrix representing the shape of the piece.
+        size (int): The size of the matrix (its dimension, assuming it's square).
+        color (int): An integer representing the color of the piece.
+
+    Methods:
+        __init__(matrix, color):
+            Initializes the piece with a matrix representing its shape and a color.
+        _rotate(clockwise):
+            Performs an in-place rotation of the piece's matrix.
+        rotate():
+            Rotates the piece 90 degrees clockwise. The rotation is performed in-place.
+        unrotate():
+            Rotates the piece 90 degrees counterclockwise. The rotation is performed in-place.
+    """
     def __init__(self, matrix, color:int) -> None:
         """
         Initializes the piece with a matrix representing its shape and a color.
@@ -75,7 +131,7 @@ class PieceForm:
         """
         return self.matrix[key]
 
-    def get_color(self):
+    def get_color(self) -> int:
         """
         Retrieves the color of the piece.
 
@@ -92,6 +148,15 @@ class PieceForm:
             str: A formatted string representing the matrix row by row.
         """
         return '\n'.join([' '.join(map(str, row)) for row in self.matrix])
+    
+    def __hash__(self):
+        # Definir una función de hash personalizada
+        matrix_tuple = tuple(tuple(row) for row in self.matrix)
+        return hash((matrix_tuple, self.color))
+
+    def __eq__(self, other: 'PieceForm') -> bool:
+        # Definir la comparación de igualdad
+        return self.matrix == other.matrix and self.color == other.color
 
 
 
