@@ -27,9 +27,6 @@ class Controler:
                     if event.key == pygame.K_s:
                         action = Actions.DOWN
 
-            
-
-        
             return action
 
             

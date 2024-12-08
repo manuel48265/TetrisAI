@@ -4,20 +4,24 @@ import numpy as np
 import src.utils.pieceForm as pf
 
 @pytest.mark.parametrize(
-    "pos_x,pos_y",
+    "pos_x, pos_y",
     [
-        (5,4),
-        (3,6)
+        (5, 4),      # Standard valid position
+        (3, 6),      # Another standard valid position
+        (0, 0),      # Origin position
+        (-1, 5),     # Negative X-coordinate
+        (7, -2),     # Negative Y-coordinate
+        (10, 10),    # Position outside typical grid bounds
     ],
 )
-def test_set_position(pos_x,pos_y):
-    """AI is creating summary for test_set_position
-
+def test_set_position(pos_x, pos_y):
+    """Tests the correct assignment of X and Y positions when creating a Piece.
+    
     Args:
-        pos_x ([type]): [description]
-        pos_y ([type]): [description]
+        pos_x (int): The X-coordinate for the piece's position.
+        pos_y (int): The Y-coordinate for the piece's position.
     """
-    piece = Piece(pos_x,pos_y)
+    piece = Piece(pos_x, pos_y)
 
     assert (piece.x == pos_x and piece.y == pos_y)
 
@@ -30,11 +34,11 @@ def test_set_position(pos_x,pos_y):
     ],
 )
 def test_is_empty_row(piece,target):
-    """AI is creating summary for test_is_empty_row
-
+    """ Tests the correct identification of empty rows in a piece.
+    
     Args:
-        piece ([type]): [description]
-        target ([type]): [description]
+        piece (Piece): The piece to check for empty rows.
+        target (list): The expected results for each row.
     """
     test_piece = Piece(0,0,piece)
     output =[]
@@ -52,13 +56,13 @@ def test_is_empty_row(piece,target):
     ],
 )
 def test_get_lines(piece,posx,posy,target):
-    """AI is creating summary for test_get_lines
+    """Tests the correct retrieval of the vertical lines occupied by a piece.
 
     Args:
-        piece ([type]): [description]
-        posx ([type]): [description]
-        posy ([type]): [description]
-        target ([type]): [description]
+        piece (Piece): The piece to check for vertical lines.
+        posx (int): The X-coordinate for the piece's position.
+        posy (int): The Y-coordinate for the piece's position.
+        target (list): The expected results for the vertical lines.
     """
     test_piece = Piece(posx,posy,piece)
     output= test_piece.get_lines()
@@ -74,13 +78,13 @@ def test_get_lines(piece,posx,posy,target):
     ],
 )
 def test_adjust_pos(piece,posx,sizex,target):
-    """AI is creating summary for test_adjust_pos
+    """Tests the correct adjustment of a piece's position to stay within the horizontal bounds.
 
     Args:
-        piece ([type]): [description]
-        posx ([type]): [description]
-        sizex ([type]): [description]
-        target ([type]): [description]
+        piece (Piece): The piece to adjust.
+        posx (int): The X-coordinate for the piece's position.
+        sizex (int): The maximum horizontal size of the board.
+        target (int): The expected X-coordinate after adjustment.
     """
     test_piece = Piece(posx,0,piece)
 
@@ -109,6 +113,12 @@ def test_adjust_pos(piece,posx,sizex,target):
     ]))
 ])
 def test_into_numpy(initial_pos, expected_grid):
+    """Tests the correct update of the game grid with the piece's shape.
+    
+    Args:
+        initial_pos (tuple): The initial position of the piece.
+        expected_grid (np.array): The expected game grid after updating with the piece's shape.
+    """
     piece = Piece(initial_pos[0],initial_pos[1], pf.PIECE_Z)
     grid = np.zeros((4, 4), dtype=int)
     piece.into_numpy(grid)
