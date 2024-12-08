@@ -1,6 +1,7 @@
 import pytest
 from src.piece import Piece
-import src.pieceForm as pf
+import numpy as np
+import src.utils.pieceForm as pf
 
 @pytest.mark.parametrize(
     "pos_x,pos_y",
@@ -45,9 +46,9 @@ def test_is_empty_row(piece,target):
 @pytest.mark.parametrize(
     "piece,posx,posy,target",
     [
-        (pf.PIECE_I,3,4,[1,2,3,4]),
-        (pf.PIECE_I,3,2,[0,1,2]),
-        (pf.PIECE_O,3,7,[6,7]),
+        (pf.PIECE_I,3,4,[4,5,6,7]),
+        (pf.PIECE_I,3,2,[2,3,4,5]),
+        (pf.PIECE_O,3,7,[7,8]),
     ],
 )
 def test_get_lines(piece,posx,posy,target):
@@ -86,4 +87,30 @@ def test_adjust_pos(piece,posx,sizex,target):
     test_piece.adjust_pos(sizex)
 
     assert test_piece.x == target
+
+@pytest.mark.parametrize("initial_pos, expected_grid", [
+    ((0, 0), np.array([
+        [1, 1, 0, 0],
+        [0, 1, 1, 0],
+        [0, 0, 0, 0],
+        [0, 0, 0, 0]
+    ])),
+    ((1, 1), np.array([
+        [0, 0, 0, 0],
+        [0, 1, 1, 0],
+        [0, 0, 1, 1],
+        [0, 0, 0, 0]
+    ])),
+    ((1, 2), np.array([
+        [0, 0, 0, 0],
+        [0, 0, 0, 0],
+        [0, 1, 1, 0],
+        [0, 0, 1, 1]
+    ]))
+])
+def test_into_numpy(initial_pos, expected_grid):
+    piece = Piece(initial_pos[0],initial_pos[1], pf.PIECE_Z)
+    grid = np.zeros((4, 4), dtype=int)
+    piece.into_numpy(grid)
+    np.testing.assert_array_equal(grid, expected_grid)
 
