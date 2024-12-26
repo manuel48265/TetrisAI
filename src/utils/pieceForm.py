@@ -150,13 +150,11 @@ class PieceForm:
         return '\n'.join([' '.join(map(str, row)) for row in self.matrix])
     
     def __hash__(self):
-        # Definir una función de hash personalizada
-        matrix_tuple = tuple(tuple(row) for row in self.matrix)
-        return hash((matrix_tuple, self.color))
+        return hash(self.color)
 
     def __eq__(self, other: 'PieceForm') -> bool:
         # Definir la comparación de igualdad
-        return self.matrix == other.matrix and self.color == other.color
+        return self.color == other.color
 
 
 

@@ -77,6 +77,7 @@ class Game:
         self.next_pieces = deque()
         self.current_time = tick_rate
         self.timer = TetrisTimer(time=self.current_time)
+        self.future_pieces = None
         
     def start(self, width: int, height: int, num_future_pieces: int):
         """
@@ -88,23 +89,29 @@ class Game:
             num_future_pieces (int): The number of upcoming pieces to pre-generate.
         """
         self.board = Board(width, height)
+        self.future_pieces = num_future_pieces
         self.next_pieces = self.manager.init_rand_deque(num_future_pieces)
         self.board.set_new_piece(self._get_new_piece())
         self.timer.set_funct(self.move_piece_down)
         self.timer.start()
 
-    def reset(self,time):
+    def reset(self,time=None):
         """
         Resets the game to its initial state.
         """
-        self.board = None
+        self.board.reset()
         self.score = 0
         self.level = 1
         self.running = True
         self.next_pieces.clear()
-        self.current_time = time
+        if time is not None:
+            self.current_time = time
         self.timer = TetrisTimer(time=self.current_time)
-        self.start(self.board.get_width(), self.board.get_height(), len(self.next_pieces))
+        self.next_pieces = self.manager.init_rand_deque(self.future_pieces)
+        self.board.set_new_piece(self._get_new_piece())
+        self.timer.set_funct(self.move_piece_down)
+        self.timer.start()
+       
 
     def get_num_pieces(self):
         """
@@ -114,6 +121,15 @@ class Game:
             int: The number of available piece types.
         """
         return self.manager.get_num_pieces()
+    
+    def is_game_over(self):
+        """
+        Returns whether the game is over.
+
+        Returns:
+            bool: True if the game is over, False otherwise.
+        """
+        return not self.running
 
     def update(self, action):
         """
@@ -228,8 +244,17 @@ class Game:
                     self.board.move_piece_left()
                 case Actions.DOWN:
                     self.move_piece_down()
+                    #self.score += 1
                 case _:
                     pass
+    
+    def get_current_piece(self) -> Piece:
+        """
+        Returns the current piece on the board.
 
+        Returns:
+            Piece: The current piece on the board.
+        """
+        return self.board.get_current_piece()  
         
 
