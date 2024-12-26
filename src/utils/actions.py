@@ -1,8 +1,18 @@
 from aenum import Enum
 class Actions(Enum):
-    IDLE = 0
-    ROTATE = 1
-    RIGHT = 2
-    LEFT = 3
-    DOWN = 4
+    ROTATE = 0
+    RIGHT = 1
+    LEFT = 2
+    DOWN = 3
+    IDLE = 4
+
+    def __int__(self):
+        return self.value
+    
+    @staticmethod
+    def int_to_action(action: int):
+        return Actions(action)
+
+
+
     

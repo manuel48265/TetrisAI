@@ -1,7 +1,11 @@
 import pygame
+import copy
+from collections import deque
 from src.piece import Piece
+import src.utils.pieceForm as pf
 from src.constFile.constGame import CELL_SIZE, EMPTY_CELL
 from src.constFile.constColors import tetris_colors
+from src.utils.actions import Actions
 
 class Board:
     """
@@ -30,6 +34,13 @@ class Board:
         self.grid = [[EMPTY_CELL for _ in range(width)] for _ in range(height)]
         self.current_piece = None
         self.points = {0: 0, 1: 100, 2: 300, 3: 500, 4: 800}
+
+    def reset(self) -> None:
+        """
+        Resets the game board to its initial state.
+        """
+        self.grid = [[EMPTY_CELL for _ in range(self.width)] for _ in range(self.height)]
+        self.current_piece = None
     
     def is_valid_position(self) -> bool:
         """
@@ -50,6 +61,15 @@ class Board:
                     if bad_x or bad_y or self.grid[posy][posx] != EMPTY_CELL:
                         return False
         return True
+    
+    def get_grid(self) -> list:
+        """
+        Returns the current state of the game board.
+
+        Returns:
+            list: A 2D list representing the game board.
+        """
+        return self.grid
 
     def _cols_down(self, lines: list) -> None:
         """
@@ -134,15 +154,25 @@ class Board:
         Returns:
             bool: True if the piece was successfully moved, False otherwise.
         """
+
+        if self.can_move_piece_down():
+            return True
+        else:
+            self.lock_piece()
+            return False
+        
+    
+    def can_move_piece_down(self) -> bool:
+
         output = True
         self.current_piece.down()
 
         if not self.is_valid_position():
             self.current_piece.up()
-            self.lock_piece()
             output = False
         
         return output
+
 
     def move_piece_right(self) -> bool:
         """
@@ -219,6 +249,7 @@ class Board:
         
         return total
 
+
     def _get_points_for_clear_lines(self, num_lines) -> int:
         """
         Returns the points corresponding to the number of cleared lines.
@@ -249,11 +280,13 @@ class Board:
         """
     
         metrics = {
-            'holes': 0,
-            'max_height': 0,
+            'holes': 0.0,
+            'max_height': 0.0,
             'avg_height': 0.0,
-            'height_diff': 0.0
+            'height_diff': 0.0,
+            'points': 0.0
         }
+
         heights = [0] * self.width
         max_height = 0
         holes = 0
@@ -272,8 +305,6 @@ class Board:
                 elif not empty:
                     holes += 1
                     
-
-        print(heights)
         for i in range(self.width):
             total_height += heights[i]
         
@@ -285,8 +316,153 @@ class Board:
         metrics['holes'] = holes
         metrics['max_height'] = max_height
         metrics['avg_height'] = total_height/self.width
-
+        
         return metrics
+
+    def valid_future_positions_with_parents(self):
+        original_piece = copy.deepcopy(self.current_piece)
+
+        visited = set()  # Set para almacenar estados únicos
+        parent_map = {}  # Mapa para rastrear el padre de cada estado
+        start_row = self.current_piece.y
+        start_col = self.current_piece.x
+        states = deque([(0, start_row, start_col)])  # (rotación_index, fila, columna)
+        final_states = []
+        visited.add((0, start_row, start_col))
+
+        while states:
+            state = states.popleft()
+            rotation, row, col = state
+            self.current_piece = copy.deepcopy(original_piece)
+            for i in range(rotation):
+                self.current_piece.rotate()
+            self.current_piece.set_position(col, row)
+
+            # Intentar mover a la izquierda
+            if self.move_piece_left():
+                new_state = (rotation, self.current_piece.y, self.current_piece.x)
+                if new_state not in visited:
+                    states.append(new_state)
+                    visited.add(new_state)
+                    parent_map[new_state] = state  # Registrar el padre
+                self.current_piece.move_right()
+            
+            # Intentar mover a la derecha
+            if self.move_piece_right():
+                new_state = (rotation, self.current_piece.y, self.current_piece.x)
+                if new_state not in visited:
+                    states.append(new_state)
+                    visited.add(new_state)
+                    parent_map[new_state] = state  # Registrar el padre
+                self.current_piece.move_left()
+
+            # Intentar rotar
+            if self.rotate_piece():
+                new_state = ((rotation + 1) % 4, self.current_piece.y, self.current_piece.x)
+                if new_state not in visited:
+                    states.append(new_state)
+                    visited.add(new_state)
+                    parent_map[new_state] = state  # Registrar el padre
+                self.current_piece.unrotate()
+                self.current_piece.set_position(col,row)
+
+            # Intentar mover hacia abajo
+            if self.can_move_piece_down():
+                new_state = (rotation, self.current_piece.y, self.current_piece.x)
+                if new_state not in visited:
+                    states.append(new_state)
+                    visited.add(new_state)
+                    parent_map[new_state] = state  # Registrar el padre
+            else:
+                final_states.append((rotation, row, col))
+
+        self.current_piece = copy.deepcopy(original_piece)
+
+        return final_states, parent_map
+    
+    def get_path(self,final_pos, parent_map):
+        path = []
+        path.append(Actions.DOWN)
+        current = final_pos
+        while current in parent_map:
+            path.append(self.get_action_from_positions(parent_map[current], current))
+            current = parent_map[current]
+
+        path.reverse()
+        return path
+
+    def get_action_from_positions(self,parent_pos, current_pos):
+        """
+        Given a parent position and a current position, returns the action needed to reach the current position from the parent position.
+
+        Args:
+            parent_pos (tuple): The parent position (rotation, row, col).
+            current_pos (tuple): The current position (rotation, row, col).
+
+        Returns:
+            str: The action needed to reach the current position from the parent position.
+        """
+        parent_rotation, parent_row, parent_col = parent_pos
+        current_rotation, current_row, current_col = current_pos
+
+        if parent_rotation != current_rotation:
+            return Actions.ROTATE
+        elif parent_col < current_col:
+            return Actions.RIGHT
+        elif parent_col > current_col:
+            return Actions.LEFT
+        elif parent_row < current_row:
+            return Actions.DOWN
+        else:
+            return Actions.IDLE
+
+    def evaluate_final_pos(self,final_pos):
+        
+        original_piece = copy.deepcopy(self.current_piece)
+        original_grid = copy.deepcopy(self.grid)
+
+        for i in range(final_pos[0]):
+            self.current_piece.rotate()
+        self.current_piece.set_position(final_pos[2], final_pos[1])
+
+
+        self.lock_piece()
+        #points = self.update_and_return_points()
+        #metrics = self.get_metrics()
+
+        #metrics['points'] = points
+
+        grid = copy.deepcopy(self.grid)
+
+        self.current_piece = original_piece
+        self.grid = original_grid
+
+        return grid
+    
+    def get_metrics_pos(self,final_pos):
+
+        original_piece = copy.deepcopy(self.current_piece)
+        original_grid = copy.deepcopy(self.grid)
+
+        for i in range(final_pos[0]):
+            self.current_piece.rotate()
+        self.current_piece.set_position(final_pos[2], final_pos[1])
+
+        self.lock_piece()
+        points = self.update_and_return_points()
+        metrics = self.get_metrics()
+
+        metrics['points'] = points
+
+        grid = copy.deepcopy(self.grid)
+
+        self.current_piece = copy.deepcopy(original_piece)
+        self.grid = copy.deepcopy(original_grid)
+
+        return grid, metrics
+
+    
+
 
     def draw(self, screen, pos) -> None:
         """
@@ -305,4 +481,5 @@ class Board:
                     draw_border = 1
                 pygame.draw.rect(screen, tetris_colors[self.grid[row][col]], (x, y, CELL_SIZE, CELL_SIZE), width=draw_border)
 
-        
+
+

@@ -1,8 +1,10 @@
 import pygame
 from src.utils.actions import Actions
+import numpy as np
 class Controler:
-    def __init__(self,is_human=None):
+    def __init__(self,is_human=None,model=None):
         self.is_human = is_human
+        self.model = model
 
     def get_action(self):
 
@@ -28,5 +30,12 @@ class Controler:
                         action = Actions.DOWN
 
             return action
+        
+
+    def get_AI_Action(self,game_state):
+        return Actions.int_to_action(np.argmax(self.model.predict(game_state)))
+
+
+
 
             
