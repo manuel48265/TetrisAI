@@ -23,7 +23,7 @@ class Preprocessing:
                     output[i][j] = 1
         
         return output
-    def transform_piece(self,piece : Piece):
+    def transform_piece(self,piece : Piece) -> np.array:
         output = np.zeros(self.num_pieces)
         piece_type = piece.get_type()
         if piece_type not in self.piece_set:

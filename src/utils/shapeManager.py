@@ -41,7 +41,8 @@ class ShapeManager:
         """
         self.num_pieces = num_pieces
         self.pieces = pieces
-
+        random.seed(42)
+        
     def get_random_piece(self) -> Piece:
         """
         Returns a randomly selected Tetris piece from the list of available pieces.
@@ -52,6 +53,7 @@ class ShapeManager:
         Returns:
             Piece: A randomly chosen Tetris piece represented as a `Piece` object.
         """
+        
         return Piece(0, 0, random.choice(self.pieces))
 
     def init_rand_deque(self, num_elements: int) -> deque:
