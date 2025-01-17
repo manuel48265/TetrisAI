@@ -7,11 +7,11 @@ from src.game import Game
 
 class TetrisEnviroment:
 
-    HOLES_WEIGHT = -(0.35)
-    MAX_HEIGHT_WEIGHT = -(0.1)
+    HOLES_WEIGHT = -(0.8)
+    MAX_HEIGHT_WEIGHT = -(0)
     AVG_HEIGHT_WEIGHT = -(0.05)
     HEIGHT_DIFF_WEIGHT = -(0.18)
-    POINTS_WEIGHT = 0.01
+    POINTS_WEIGHT = 0.02
 
     def __init__(self, tick_rate, set_pieces, grid_shape, num_next_pieces) -> None:
         self.grid_shape = grid_shape
@@ -22,54 +22,128 @@ class TetrisEnviroment:
         self.preprocessor = None
         self.parents_map = None
         self.final_states = None
+        self.temporal_memory = None
 
     def start(self) -> None:
         self.game.start(self.grid_shape[0], self.grid_shape[1], self.num_next_pieces)
-        self.score = self.game.get_score()
         self.preprocessor = Preprocessing(self.game.get_board().get_grid(), self.game.get_current_piece(), self.game.get_next_pieces(), self.set_pieces, max_num_pieces=self.num_next_pieces)
 
     def reset(self) -> None:
         self.game.reset()
-        self.score = self.game.get_score()
-        self.preprocessor = Preprocessing(self.game.get_board().get_grid(), self.game.get_current_piece(), self.game.get_next_pieces(), self.set_pieces)
+        self.preprocessor = Preprocessing(self.game.get_board().get_grid(), self.game.get_current_piece(), self.game.get_next_pieces(), self.set_pieces, max_num_pieces=self.num_next_pieces)
         
     def calculate_reward(self, metrics) -> float:
 
-        reward = 10
+        reward = 100
 
         reward += self.HOLES_WEIGHT * metrics["holes"] 
-        reward += self.MAX_HEIGHT_WEIGHT * metrics["max_height"] 
+        reward += self.MAX_HEIGHT_WEIGHT * metrics["max_height"]
         reward += self.AVG_HEIGHT_WEIGHT * metrics["avg_height"] 
         reward += self.HEIGHT_DIFF_WEIGHT * metrics["height_diff"] 
         reward += self.POINTS_WEIGHT * metrics["points"]
+
+        if not metrics['done']: 
+            reward = -100
 
         return reward
     
     def calc_states(self):
         self.final_states, self.parents_map = self.game.get_board().valid_future_positions_with_parents()
+
+    def get_path(self,final_pos):
+        return self.game.get_board().get_path(final_pos, self.parents_map)
     
-        
-    def model_state(self,model):
-        max = -100000
-        final_pos = None
+    def calculate_reward_model(self, model : list, input_vals : np.array) -> np.array:
+
+        for i in range(len(model)-1):
+            input_vals = np.maximum(0,input_vals@model[i])
+            input_vals = np.append(input_vals,self.preprocessor.transform_piece(self.game.get_next_pieces()[i+1]))
+            input_vals = np.append(input_vals,np.ones(1))
+
+        val = input_vals@model[-1]
+        return val
+
+    def get_max_heuristic_model(self, model : list):
+        self.calc_states()
+        max = -10000
+        max_state = self.final_states[0]
+        holes = 100
+        avg_height = 18
+
         for state in self.final_states:
-            grid = self.game.get_board().evaluate_final_pos(state)
-            next_pieces = []
-            for i in range(len(self.game.next_pieces)-1):
-                next_pieces.append(self.game.next_pieces[i+1])
+            metrics = self.game.get_board().get_metrics_pos(state,self.game.next_pieces[0])
+            #reward = self.calculate_reward(metrics)
+            if metrics['done']:
+                input_vals = np.array([])
+                for i in range(self.grid_shape[0]):
+                    input_vals = np.append(input_vals,metrics['col ' + str(i)])
 
-            self.preprocessor.update(self.game.next_pieces[0],grid, next_pieces)
-            input = self.preprocessor.get_input()
-            model.predict(input)
-            if max < model.predict(input):
-                max = model.predict(input)
-                final_pos = state
+                input_vals = np.append(input_vals,metrics['holes'])
+                input_vals = np.append(input_vals,metrics['height_diff'])
+                input_vals = np.append(input_vals,metrics['avg_height'])
 
-        return final_pos
+                input_vals = np.append(input_vals,self.preprocessor.transform_piece(self.game.get_next_pieces()[0]))
+                input_vals = np.append(input_vals,np.ones(1))
+
+                reward = self.calculate_reward_model(model,input_vals).item()
+
+                if reward > max:
+                    max = reward
+                    max_state = state
+                    holes = metrics['holes']
+                    avg_height = metrics['avg_height']
+
+        return max_state, holes, avg_height
+    
+    def get_max_heuristic_model_simple(self, model : list):
+        self.calc_states()
+        max = -10000
+        max_state = self.final_states[0]
+
+        for state in self.final_states:
+            metrics = self.game.get_board().get_metrics_pos(state,self.game.next_pieces[0])
+            #reward = self.calculate_reward(metrics)
+            if metrics['done']:
+                input_vals = np.array([])
+                for i in range(self.grid_shape[0]):
+                    input_vals = np.append(input_vals,metrics['col ' + str(i)])
+
+                input_vals = np.append(input_vals,metrics['holes'])
+                input_vals = np.append(input_vals,metrics['height_diff'])
+                input_vals = np.append(input_vals,metrics['avg_height'])
+
+                input_vals = np.append(input_vals,self.preprocessor.transform_piece(self.game.get_next_pieces()[0]))
+                input_vals = np.append(input_vals,np.ones(1))
+
+                reward = self.calculate_reward_model(model,input_vals).item()
+
+                if reward > max:
+                    max = reward
+                    max_state = state
+
+        return max_state
+    
+
+    def get_max_heuristic(self):
+        self.calc_states()
+        max = -10000
+        max_state = None
+
+        for state in self.final_states:
+            metrics = self.game.get_board().get_metrics_pos(state,self.game.next_pieces[0])
+            reward = self.calculate_reward(metrics)
+
+            if reward > max:
+                max = reward
+                max_state = state
+
+        return max_state
 
     def step(self,final_pos) -> tuple:
 
         self.calc_states()
+
+        self.temporal_memory = []
 
         path = self.game.get_board().get_path(final_pos,self.parents_map)
         reward = self.calculate_reward(final_pos)
@@ -87,6 +161,7 @@ class TetrisEnviroment:
     
     def get_state(self) -> np.ndarray:
         return self.preprocessor.get_input()
+    
     
     
 

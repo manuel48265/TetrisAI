@@ -311,7 +311,9 @@ class Board:
         for i in range(len(heights) - 1):
             height_diff += abs(heights[i] - heights[i + 1])
             
-            
+        for i in range(len(heights)):
+            metrics['col ' + str(i)] = heights[i]/self.height
+
         metrics['height_diff'] = height_diff
         metrics['holes'] = holes
         metrics['max_height'] = max_height
@@ -439,10 +441,11 @@ class Board:
 
         return grid
     
-    def get_metrics_pos(self,final_pos):
+    def get_metrics_pos(self,final_pos, next_piece):
 
         original_piece = copy.deepcopy(self.current_piece)
         original_grid = copy.deepcopy(self.grid)
+        next_piece = copy.deepcopy(next_piece)
 
         for i in range(final_pos[0]):
             self.current_piece.rotate()
@@ -453,17 +456,15 @@ class Board:
         metrics = self.get_metrics()
 
         metrics['points'] = points
+        
+        metrics['done'] = self.set_new_piece(next_piece)
 
-        grid = copy.deepcopy(self.grid)
+        self.current_piece = original_piece
+        self.grid = original_grid
 
-        self.current_piece = copy.deepcopy(original_piece)
-        self.grid = copy.deepcopy(original_grid)
-
-        return grid, metrics
-
+        return metrics
     
-
-
+    
     def draw(self, screen, pos) -> None:
         """
         Draws the current state of the board and the pieces on the screen.
