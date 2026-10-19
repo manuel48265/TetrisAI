@@ -53,8 +53,11 @@ The program asks for a mode:
 Run the tests:
 
 ```bash
-PYTHONPATH=. pytest test
+PYTHONPATH=. pytest test/test*.py
 ```
+
+The test files are named `testX.py`, so they are passed explicitly; pytest does not collect them on
+its own.
 
 ## Repository structure
 
