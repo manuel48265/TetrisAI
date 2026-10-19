@@ -408,7 +408,6 @@ def test_get_metrics(grid, target_metrics):
     metrics = test_board.get_metrics()
 
     EPSILON = 1e-6
-    assert 1 == 0
     assert abs(metrics['avg_height'] - target_metrics['avg_height']) < EPSILON
     assert metrics['holes'] == target_metrics['holes']
     assert metrics['max_height'] == target_metrics['max_height']
